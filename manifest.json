@@ -1,13 +1,22 @@
 {
+  "id": "./",
   "name": "Дни без дыма",
   "short_name": "Без дыма",
+  "description": "Счётчик дней без сигарет: экономия, восстановление организма и помощь при тяге.",
   "start_url": "./",
+  "scope": "./",
   "display": "standalone",
+  "orientation": "portrait",
   "background_color": "#EEF3F1",
   "theme_color": "#0B7A66",
   "lang": "ru",
+  "categories": ["health", "lifestyle"],
   "icons": [
     { "src": "icon-192.png", "sizes": "192x192", "type": "image/png" },
-    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png" }
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ],
+  "shortcuts": [
+    { "name": "Хочется курить", "short_name": "Тяга", "description": "Дыхание и таймер на 3 минуты", "url": "./?sos", "icons": [{ "src": "icon-192.png", "sizes": "192x192" }] }
   ]
 }

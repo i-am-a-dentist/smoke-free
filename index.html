@@ -203,7 +203,32 @@ h2 { font-family: var(--display); font-size: 17px; font-weight: 600; margin: 8px
   bottom: calc(20px + env(safe-area-inset-bottom, 0px));
   background: var(--fg); color: var(--bg); padding: 10px 16px; border-radius: 999px; font-size: 14px; font-weight: 600;
 }
-@media (prefers-reduced-motion: reduce) { .bar > i { transition: none; } .hours i.c { animation: none; opacity: .5; } }
+.top-actions { display: flex; gap: 8px; }
+
+/* craving help: a card on the page and a full-screen breathing overlay */
+.sos { background: var(--surface); border-radius: 18px; padding: 16px 18px; display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+.sos-text { font-size: 14px; color: var(--muted); }
+.sos-text b { color: var(--fg); font-weight: 700; }
+.sos-text .sos-won { color: var(--accent); font-variant-numeric: tabular-nums; }
+.sos-screen {
+  position: fixed; inset: 0; z-index: 10; background: var(--bg); overflow-y: auto;
+  padding: calc(24px + env(safe-area-inset-top, 0px)) max(16px, env(safe-area-inset-right, 0px)) calc(24px + env(safe-area-inset-bottom, 0px)) max(16px, env(safe-area-inset-left, 0px));
+}
+.sos-inner { max-width: 420px; min-height: 100%; margin: 0 auto; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 18px; text-align: center; }
+.sos-title { font-family: var(--display); font-size: 20px; font-weight: 600; text-wrap: balance; }
+.sos-sub { color: var(--muted); font-size: 14px; margin-top: -8px; }
+.breath { width: 220px; height: 220px; display: grid; place-items: center; position: relative; }
+.breath::before {
+  content: ""; position: absolute; inset: 0; border-radius: 50%; background: var(--accent-soft);
+  transform: scale(.55); animation: breathe 10s ease-in-out infinite;
+}
+.breath span { position: relative; font-family: var(--display); font-size: 22px; font-weight: 600; color: var(--accent); }
+@keyframes breathe { 40% { transform: scale(1); } 100% { transform: scale(.55); } }
+.sos-timer { font-family: var(--display); font-size: 34px; font-weight: 600; font-variant-numeric: tabular-nums; }
+.sos-tip { background: var(--surface); border-radius: 14px; padding: 12px 14px; font-size: 14px; min-height: 3em; width: 100%; }
+.sos-inner .actions { justify-content: center; }
+
+@media (prefers-reduced-motion: reduce) { .bar > i { transition: none; } .hours i.c { animation: none; opacity: .5; } .breath::before { animation: none; transform: scale(.8); } }
 </style>
 </head>
 <body>
@@ -211,7 +236,10 @@ h2 { font-family: var(--display); font-size: 17px; font-weight: 600; margin: 8px
 <div class="app">
   <div class="top">
     <div class="brand">Дни без дыма</div>
-    <button class="icon-btn" id="openSettings" type="button">Настройки</button>
+    <div class="top-actions">
+      <button class="icon-btn" id="share" type="button" hidden>Поделиться</button>
+      <button class="icon-btn" id="openSettings" type="button">Настройки</button>
+    </div>
   </div>
 
   <div class="demo" id="demo" hidden>
@@ -246,6 +274,15 @@ h2 { font-family: var(--display); font-size: 17px; font-weight: 600; margin: 8px
       </div>
     </form>
     <div class="confirm">
+      <div style="font-weight:600">Резервная копия</div>
+      <div class="note" style="margin:0">Данные живут только в этом браузере. Сохраните файл, чтобы перенести их на другое устройство.</div>
+      <div class="actions">
+        <button class="btn ghost" type="button" id="backup">Сохранить копию</button>
+        <button class="btn ghost" type="button" id="restore">Восстановить</button>
+        <input type="file" id="restoreFile" accept=".json,application/json" hidden>
+      </div>
+    </div>
+    <div class="confirm">
       <button class="btn danger" type="button" id="relapse">Сорвался, начать заново</button>
       <div id="relapseConfirm" hidden>
         <p style="margin:0 0 10px">Счётчик начнётся с текущего момента. Это нормально: большинство бросает не с первой попытки.</p>
@@ -262,6 +299,11 @@ h2 { font-family: var(--display); font-size: 17px; font-weight: 600; margin: 8px
     <div class="days"><span class="days-num" id="days">0</span><span class="days-word" id="daysWord">дней</span></div>
     <div class="clock" id="clock"></div>
     <div class="since" id="since"></div>
+  </section>
+
+  <section class="sos">
+    <div class="sos-text"><b>Тянет закурить?</b><br>Приступ тяги проходит за 3–5 минут. <span class="sos-won" id="sosWon"></span></div>
+    <button class="btn" id="sosOpen" type="button">Помогите</button>
   </section>
 
   <section class="stats">
@@ -313,6 +355,20 @@ h2 { font-family: var(--display); font-size: 17px; font-weight: 600; margin: 8px
   <ol class="timeline" id="timeline"></ol>
 
   <p class="note">* Оценка: каждая сигарета в среднем сокращает жизнь примерно на 11 минут. Сроки восстановления основаны на данных ВОЗ и CDC и у каждого человека свои.<br>** Приблизительная модель, а не медицинский показатель. Опирается на исследования: улучшение эрекции через 8 недель после отказа (Harte, Meston, 2012), у четверти мужчин с ЭД улучшение за год (Pourmand, 2004), риск ЭД приближается к уровню некурящих примерно за 10 лет. При проблемах с потенцией лучше обратиться к урологу. Данные хранятся только в этом браузере.</p>
+</div>
+
+<div class="sos-screen" id="sosScreen" role="dialog" aria-modal="true" aria-labelledby="sosTitle" hidden>
+  <div class="sos-inner">
+    <div class="sos-title" id="sosTitle">Подышите вместе со мной</div>
+    <div class="sos-sub">Вдох 4 секунды, выдох 6. Тяга ослабнет.</div>
+    <div class="breath"><span id="sosPhase">Вдох</span></div>
+    <div class="sos-timer" id="sosTimer">3:00</div>
+    <div class="sos-tip" id="sosTip"></div>
+    <div class="actions">
+      <button class="btn" id="sosWin" type="button">Справился</button>
+      <button class="btn ghost" id="sosClose" type="button">Закрыть</button>
+    </div>
+  </div>
 </div>
 
 <div class="toast" id="toast" hidden></div>
@@ -390,7 +446,10 @@ function load() {
   return null;
 }
 function save(s) {
-  try { localStorage.setItem(KEY, JSON.stringify(s)); return true; } catch (e) { return false; }
+  try { localStorage.setItem(KEY, JSON.stringify(s)); } catch (e) { return false; }
+  // Ask the browser not to evict the data (Safari clears storage of unused sites)
+  if (navigator.storage && navigator.storage.persist) navigator.storage.persist().catch(() => {});
+  return true;
 }
 
 function plural(n, forms) {
@@ -540,6 +599,19 @@ function render() {
   }
   if (lastDoneCount !== -1 && doneCount > lastDoneCount && !isDemo) toast("Новое достижение: " + MILESTONES[doneCount - 1].title);
   lastDoneCount = doneCount;
+
+  const won = state.cravings || 0;
+  $("sosWon").textContent = won ? "Тяг побеждено: " + fmtNum(won) : "";
+  $("share").hidden = isDemo;
+  updateBadge(isDemo ? 0 : d);
+}
+
+// Day count on the home-screen icon (installed app, where the browser supports it)
+let badgeDays = -1;
+function updateBadge(d) {
+  if (d === badgeDays || !("setAppBadge" in navigator)) return;
+  badgeDays = d;
+  (d ? navigator.setAppBadge(d) : navigator.clearAppBadge()).catch(() => {});
 }
 
 let toastTimer;
@@ -567,7 +639,7 @@ $("form").onsubmit = e => {
   const q = fromLocalInput($("quit").value);
   if (!q) { toast("Укажите дату и время"); return; }
   if (q.getTime() > Date.now()) { toast("Дата не может быть в будущем"); return; }
-  state = { quit: q.toISOString(), perDay: +$("perDay").value || 20, perPack: +$("perPack").value || 20, price: +$("price").value || 0 };
+  state = { quit: q.toISOString(), perDay: +$("perDay").value || 20, perPack: +$("perPack").value || 20, price: +$("price").value || 0, cravings: isDemo ? 0 : state.cravings || 0 };
   isDemo = false; $("demo").hidden = true; lastDoneCount = -1; calMonth = nowMonth();
   toast(save(state) ? "Сохранено" : "Сохранено до закрытия страницы: браузер не даёт хранить данные");
   closeSheet(); render();
@@ -580,6 +652,90 @@ $("relapseYes").onclick = () => {
   save(state); closeSheet(); render(); toast("Новый отсчёт пошёл. Вы справитесь");
 };
 
+// Craving help: breathing pace 4 s in / 6 s out, a 3-minute countdown, rotating tips
+const SOS_LEN = 3 * MIN;
+const TIPS = [
+  "Выпейте стакан холодной воды маленькими глотками.",
+  "Встаньте и пройдитесь, хотя бы по комнате.",
+  "Займите руки: телефон, ручка, эспандер, что угодно.",
+  "Пожуйте жвачку, морковку или семечки.",
+  "Напишите или позвоните кому-нибудь.",
+  "Умойтесь холодной водой.",
+  "Вспомните, зачем вы бросаете. Это всё ещё важно.",
+  "Сделайте 10 приседаний: тяге не нравится движение."
+];
+let sosStart = 0, sosTimer = null, wakeLock = null;
+function sosTick() {
+  const t = Date.now() - sosStart, left = Math.max(0, SOS_LEN - t);
+  $("sosPhase").textContent = t % 10000 < 4000 ? "Вдох" : "Выдох";
+  const sec = Math.ceil(left / 1000);
+  $("sosTimer").textContent = left ? Math.floor(sec / 60) + ":" + pad(sec % 60) : "Готово";
+  $("sosTip").textContent = left ? TIPS[Math.floor(t / 20000) % TIPS.length] : "Три минуты позади. Тяга слабеет, а вы снова сильнее.";
+}
+async function openSos() {
+  sosStart = Date.now(); sosTick();
+  $("sosScreen").hidden = false; document.body.style.overflow = "hidden";
+  clearInterval(sosTimer); sosTimer = setInterval(sosTick, 250);
+  $("sosWin").focus();
+  // Keep the screen on while breathing
+  try { wakeLock = await navigator.wakeLock.request("screen"); } catch (e) { wakeLock = null; }
+}
+function closeSos() {
+  $("sosScreen").hidden = true; document.body.style.overflow = "";
+  clearInterval(sosTimer);
+  if (wakeLock) { wakeLock.release().catch(() => {}); wakeLock = null; }
+}
+$("sosOpen").onclick = openSos;
+$("sosClose").onclick = closeSos;
+$("sosWin").onclick = () => {
+  state = { ...state, cravings: (state.cravings || 0) + 1 };
+  if (!isDemo) save(state);
+  closeSos(); render(); toast("Ещё одна победа над тягой");
+};
+document.addEventListener("keydown", e => { if (e.key === "Escape" && !$("sosScreen").hidden) closeSos(); });
+document.addEventListener("visibilitychange", async () => {
+  if (document.visibilityState === "visible" && !$("sosScreen").hidden && !wakeLock) {
+    try { wakeLock = await navigator.wakeLock.request("screen"); } catch (e) {}
+  }
+});
+
+$("share").onclick = async () => {
+  const ms = Math.max(0, Date.now() - new Date(state.quit).getTime()), d = Math.floor(ms / DAY);
+  const cigs = ms / DAY * state.perDay;
+  const text = `Не курю ${fmtNum(d)} ${plural(d, ["день", "дня", "дней"])}: ${fmtNum(cigs)} ${plural(cigs, ["сигарета", "сигареты", "сигарет"])} не выкурено, ${fmtNum(cigs / state.perPack * state.price)} ₽ сэкономлено.`;
+  if (navigator.share) {
+    try { await navigator.share({ title: "Дни без дыма", text }); } catch (e) {}
+    return;
+  }
+  try { await navigator.clipboard.writeText(text); toast("Скопировано"); } catch (e) { toast(text); }
+};
+
+$("backup").onclick = async () => {
+  if (isDemo) { toast("Сначала укажите свою дату"); return; }
+  const name = "bez-dyma-" + new Date().toISOString().slice(0, 10) + ".json";
+  const file = new File([JSON.stringify(state, null, 2)], name, { type: "application/json" });
+  // On phones the share sheet is the easiest way to put the file into Files, Drive or a chat
+  if (navigator.canShare && navigator.canShare({ files: [file] })) {
+    try { await navigator.share({ files: [file], title: "Дни без дыма" }); return; } catch (e) { if (e.name === "AbortError") return; }
+  }
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(file); a.download = name; a.click();
+  setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+};
+$("restore").onclick = () => $("restoreFile").click();
+$("restoreFile").onchange = async e => {
+  const f = e.target.files[0]; e.target.value = "";
+  if (!f) return;
+  try {
+    const s = JSON.parse(await f.text()), q = new Date(s.quit);
+    if (isNaN(q) || q.getTime() > Date.now() || !(s.perDay > 0) || !(s.perPack > 0) || !(s.price >= 0)) throw 0;
+    state = { quit: q.toISOString(), perDay: +s.perDay, perPack: +s.perPack, price: +s.price, cravings: Math.max(0, +s.cravings || 0) };
+  } catch (err) { toast("Не получилось прочитать файл"); return; }
+  isDemo = false; $("demo").hidden = true; lastDoneCount = -1; calMonth = nowMonth(); calKey = "";
+  toast(save(state) ? "Данные восстановлены" : "Восстановлено до закрытия страницы");
+  closeSheet(); render();
+};
+
 state = load();
 if (!state) {
   isDemo = true;
@@ -588,6 +744,8 @@ if (!state) {
 }
 render();
 setInterval(render, 1000);
+// Home-screen shortcut "Хочется курить" opens ./?sos
+if (new URLSearchParams(location.search).has("sos")) { history.replaceState(null, "", location.pathname); openSos(); }
 </script>
 <script>
 if ("serviceWorker" in navigator) navigator.serviceWorker.register("sw.js").catch(() => {});
