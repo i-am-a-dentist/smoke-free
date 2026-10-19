@@ -14,13 +14,12 @@
 :root { color-scheme: light; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); }
 body { margin: 0; font-family: -apple-system, system-ui, sans-serif; font-size: 14px; -webkit-text-size-adjust: 100%; }
 [hidden] { display: none !important; }
-</style>
 <title>Дни без дыма</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;600;700&family=Manrope:wght@400;500;600;700&display=swap">
 <style>
-/* Layout: one narrow phone column — live timer on top, three savings figures, then the health timeline as a vertical track */
+/* Layout: one narrow phone column — live timer, savings, craving help, today's hours, month calendar, rewards, then the recovery timeline */
 :root {
   --bg: #EEF3F1;
   --surface: #FFFFFF;
@@ -29,6 +28,8 @@ body { margin: 0; font-family: -apple-system, system-ui, sans-serif; font-size: 
   --line: #D3DED9;
   --accent: #0B7A66;
   --accent-soft: #D5EDE6;
+  --rose: #A8456B;
+  --rose-soft: #F5E1E9;
   --warn: #B4472F;
   --display: "Unbounded", "Arial Black", system-ui, sans-serif;
   --body: "Manrope", -apple-system, "Segoe UI", Roboto, sans-serif;
@@ -36,13 +37,15 @@ body { margin: 0; font-family: -apple-system, system-ui, sans-serif; font-size: 
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
     --bg: #0C1613; --surface: #14211D; --fg: #E4EFEB; --muted: #8FA59D;
-    --line: #23352F; --accent: #3FC7A8; --accent-soft: #173A31; --warn: #F08A6E;
+    --line: #23352F; --accent: #3FC7A8; --accent-soft: #173A31;
+    --rose: #EC8FB2; --rose-soft: #3A1E2A; --warn: #F08A6E;
     color-scheme: dark;
   }
 }
 :root[data-theme="dark"] {
   --bg: #0C1613; --surface: #14211D; --fg: #E4EFEB; --muted: #8FA59D;
-  --line: #23352F; --accent: #3FC7A8; --accent-soft: #173A31; --warn: #F08A6E;
+  --line: #23352F; --accent: #3FC7A8; --accent-soft: #173A31;
+  --rose: #EC8FB2; --rose-soft: #3A1E2A; --warn: #F08A6E;
   color-scheme: dark;
 }
 
@@ -55,22 +58,29 @@ body {
   padding-block: 20px 48px;
 }
 .app { max-width: 520px; margin: 0 auto; display: flex; flex-direction: column; gap: 20px; }
+button:focus-visible, input:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+h2 { font-family: var(--display); font-size: 17px; font-weight: 600; margin: 8px 0 0; }
+.eyebrow { font-size: 12px; text-transform: uppercase; letter-spacing: .12em; color: var(--muted); font-weight: 600; }
+.card { background: var(--surface); border-radius: 18px; padding: 16px; display: flex; flex-direction: column; gap: 12px; }
+.card-head { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+.card-title { font-family: var(--display); font-weight: 600; font-size: 16px; }
+.card-sum { font-size: 13px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.card-sum b { color: var(--accent); }
 
 .top { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
 .brand { font-family: var(--display); font-weight: 600; font-size: 15px; letter-spacing: .02em; }
-.icon-btn {
+.pill-btn {
   font: inherit; font-size: 14px; font-weight: 600; color: var(--accent);
   background: var(--accent-soft); border: 0; border-radius: 999px; padding: 8px 14px; cursor: pointer;
 }
-button:focus-visible, input:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 
 .demo {
   background: var(--surface); border: 1px dashed var(--accent); border-radius: 14px;
   padding: 12px 14px; font-size: 14px; display: flex; gap: 12px; align-items: center; justify-content: space-between; flex-wrap: wrap;
 }
 
+/* hero */
 .hero { padding-block: 8px 4px; }
-.eyebrow { font-size: 12px; text-transform: uppercase; letter-spacing: .12em; color: var(--muted); font-weight: 600; }
 .days { display: flex; align-items: baseline; gap: 12px; margin-top: 6px; }
 .days-num { font-family: var(--display); font-weight: 700; font-size: clamp(64px, 22vw, 112px); line-height: .95; color: var(--accent); font-variant-numeric: tabular-nums; }
 .days-word { font-family: var(--display); font-size: 22px; font-weight: 400; }
@@ -78,12 +88,37 @@ button:focus-visible, input:focus-visible { outline: 2px solid var(--accent); ou
 .clock span { color: var(--muted); font-size: 13px; font-family: var(--body); margin: 0 10px 0 3px; letter-spacing: 0; }
 .since { color: var(--muted); font-size: 14px; margin-top: 6px; }
 
+/* thought of the day */
+.quote { border-left: 3px solid var(--accent); padding: 2px 0 2px 14px; font-size: 17px; font-weight: 600; line-height: 1.45; text-wrap: balance; }
+
+/* stats */
 .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
 .stat { background: var(--surface); border-radius: 14px; padding: 14px 12px; min-width: 0; }
 .stat-val { font-family: var(--display); font-weight: 600; font-size: 20px; font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
 .stat-label { font-size: 12.5px; color: var(--muted); line-height: 1.3; margin-top: 4px; }
 @media (max-width: 360px) { .stat-val { font-size: 17px; } }
+.buy { font-size: 14px; color: var(--muted); margin-top: -8px; }
+.buy b { color: var(--fg); }
 
+/* craving help */
+.sos-btn {
+  font: inherit; font-weight: 700; font-size: 16px; width: 100%; padding: 16px; border-radius: 16px; cursor: pointer;
+  border: 2px solid var(--accent); background: transparent; color: var(--accent);
+  display: flex; justify-content: center; align-items: center; gap: 10px;
+}
+.sos { background: var(--surface); border-radius: 18px; padding: 20px 16px; display: flex; flex-direction: column; gap: 16px; align-items: center; text-align: center; }
+.breath-wrap { width: 180px; height: 180px; display: grid; place-items: center; max-width: 100%; }
+.breath {
+  width: 100%; height: 100%; border-radius: 50%; background: var(--accent-soft); border: 3px solid var(--accent);
+  display: grid; place-items: center; transform: scale(.55); transition: transform 4s ease-in-out;
+}
+.breath.big { transform: scale(1); }
+.breath-word { font-family: var(--display); font-weight: 600; font-size: 18px; color: var(--accent); transform: scale(1.4); }
+.breath.big .breath-word { transform: none; }
+.sos-time { font-family: var(--display); font-size: 28px; font-variant-numeric: tabular-nums; }
+.sos-tips { text-align: left; margin: 0; padding-left: 20px; font-size: 14px; color: var(--muted); display: flex; flex-direction: column; gap: 6px; }
+
+/* next milestone */
 .next { background: var(--fg); color: var(--bg); border-radius: 18px; padding: 18px; }
 .next .eyebrow { color: inherit; opacity: .7; }
 .next-title { font-family: var(--display); font-size: 18px; font-weight: 600; margin-top: 6px; text-wrap: balance; }
@@ -92,36 +127,7 @@ button:focus-visible, input:focus-visible { outline: 2px solid var(--accent); ou
 .bar > i { display: block; height: 100%; background: var(--accent); border-radius: inherit; transition: width .6s; }
 .next-meta { display: flex; justify-content: space-between; font-size: 13px; margin-top: 8px; opacity: .85; font-variant-numeric: tabular-nums; gap: 8px; }
 
-h2 { font-family: var(--display); font-size: 17px; font-weight: 600; margin: 8px 0 0; }
-
-/* potency recovery card */
-.pot { background: var(--surface); border-radius: 18px; padding: 18px; display: flex; flex-direction: column; gap: 8px; }
-.pot-row { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
-.pot-num { font-family: var(--display); font-weight: 700; font-size: 40px; line-height: 1; color: var(--accent); font-variant-numeric: tabular-nums; }
-.pot-label { font-weight: 600; }
-.pot .bar { background: var(--accent-soft); margin-top: 4px; }
-.pot-text { font-size: 14px; color: var(--muted); }
-
-/* reward badges */
-.badges-head { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; flex-wrap: wrap; }
-.badges-count { font-size: 13px; color: var(--muted); font-variant-numeric: tabular-nums; }
-.badges { display: grid; grid-template-columns: repeat(auto-fill, minmax(145px, 1fr)); gap: 10px; }
-.badge { background: var(--surface); border-radius: 14px; padding: 12px; display: flex; flex-direction: column; gap: 4px; min-width: 0; border: 1px solid transparent; }
-.badge.done { border-color: var(--accent); }
-.badge-k { font-size: 11px; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); font-weight: 700; }
-.badge-v { font-family: var(--display); font-weight: 600; font-size: 17px; font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
-.badge.done .badge-v { color: var(--accent); }
-.badge.locked .badge-v { color: var(--muted); }
-.badge-s { font-size: 12.5px; color: var(--muted); font-variant-numeric: tabular-nums; }
-.mbar { height: 4px; border-radius: 99px; background: var(--line); overflow: hidden; margin-top: 4px; }
-.mbar > i { display: block; height: 100%; background: var(--accent); }
-
 /* today: 24 large hour tiles, the running hour fills up minute by minute */
-.today-box { background: var(--surface); border-radius: 18px; padding: 16px; display: flex; flex-direction: column; gap: 12px; }
-.today-head { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; flex-wrap: wrap; }
-.today-title { font-family: var(--display); font-weight: 600; font-size: 16px; }
-.today-sum { font-size: 13px; color: var(--muted); font-variant-numeric: tabular-nums; }
-.today-sum b { color: var(--accent); }
 .today-grid { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 6px; }
 .th {
   border-radius: 8px; padding: 8px 0; text-align: center; font-size: 13px; font-weight: 600;
@@ -133,11 +139,9 @@ h2 { font-family: var(--display); font-size: 17px; font-weight: 600; margin: 8px
 @media (min-width: 480px) { .today-grid { grid-template-columns: repeat(8, minmax(0, 1fr)); } }
 
 /* hour calendar: each day is a 6×4 grid of its 24 hours */
-.cal { background: var(--surface); border-radius: 18px; padding: 16px; display: flex; flex-direction: column; gap: 12px; }
-.cal-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
-.cal-month { font-family: var(--display); font-weight: 600; font-size: 16px; }
 .nav { width: 36px; height: 36px; border-radius: 50%; border: 1px solid var(--line); background: transparent; color: var(--fg); font: inherit; font-size: 18px; line-height: 1; cursor: pointer; }
 .nav:disabled { opacity: .3; cursor: default; }
+.cal-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
 .cal-grid { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 8px 6px; }
 .wd { font-size: 11px; color: var(--muted); text-align: center; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; }
 .day { min-width: 0; display: flex; flex-direction: column; gap: 3px; }
@@ -151,12 +155,30 @@ h2 { font-family: var(--display); font-size: 17px; font-weight: 600; margin: 8px
 .hours i.c { background: var(--accent); animation: pulse 1.6s ease-in-out infinite; }
 @keyframes pulse { 50% { opacity: .3; } }
 .cal-foot { display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; font-size: 13px; color: var(--muted); }
-.cal-sum { font-variant-numeric: tabular-nums; }
-.cal-sum b { color: var(--accent); }
 .legend { display: flex; gap: 12px; flex-wrap: wrap; }
 .legend span { display: inline-flex; align-items: center; gap: 5px; }
 .legend i { width: 9px; height: 9px; border-radius: 2px; background: var(--line); display: inline-block; }
 .legend i.g { background: var(--accent); }
+
+/* reward badges */
+.badges { display: grid; grid-template-columns: repeat(auto-fill, minmax(145px, 1fr)); gap: 10px; }
+.badge { background: var(--surface); border-radius: 14px; padding: 12px; display: flex; flex-direction: column; gap: 4px; min-width: 0; border: 1px solid transparent; }
+.badge.done { border-color: var(--accent); }
+.badge-k { font-size: 11px; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); font-weight: 700; }
+.badge-v { font-family: var(--display); font-weight: 600; font-size: 17px; font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
+.badge.done .badge-v { color: var(--accent); }
+.badge.locked .badge-v { color: var(--muted); }
+.badge-s { font-size: 12.5px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.mbar { height: 4px; border-radius: 99px; background: var(--line); overflow: hidden; margin-top: 4px; }
+.mbar > i { display: block; height: 100%; background: var(--accent); }
+
+/* recovery timeline */
+.filters { display: flex; gap: 8px; flex-wrap: wrap; }
+.chip {
+  font: inherit; font-size: 13px; font-weight: 600; padding: 6px 12px; border-radius: 999px; cursor: pointer;
+  border: 1px solid var(--line); background: transparent; color: var(--muted);
+}
+.chip[aria-pressed="true"] { background: var(--fg); color: var(--bg); border-color: var(--fg); }
 .timeline { list-style: none; margin: 0; padding: 0; }
 .ms { display: grid; grid-template-columns: 28px 1fr; gap: 12px; position: relative; padding-bottom: 18px; }
 .ms::before { content: ""; position: absolute; left: 13px; top: 28px; bottom: 0; width: 2px; background: var(--line); }
@@ -169,19 +191,24 @@ h2 { font-family: var(--display); font-size: 17px; font-weight: 600; margin: 8px
 .ms.done .dot { background: var(--accent); border-color: var(--accent); color: var(--bg); }
 .ms.current .dot { border-color: var(--accent); color: var(--accent); }
 .ms-body { min-width: 0; padding-top: 2px; }
+.ms-top { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
 .ms-when { font-size: 12px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
 .ms.done .ms-when { color: var(--accent); }
+.tag { font-size: 11px; font-weight: 700; padding: 1px 8px; border-radius: 999px; background: var(--accent-soft); color: var(--accent); }
+.tag.e { background: var(--rose-soft); color: var(--rose); }
 .ms-title { font-weight: 700; margin-top: 2px; }
 .ms-text { font-size: 14px; color: var(--muted); margin-top: 2px; }
 .ms.locked .ms-title { color: var(--muted); }
 .ms-status { font-size: 13px; margin-top: 4px; font-variant-numeric: tabular-nums; }
 .ms.done .ms-status { color: var(--accent); }
+.more-btn { font: inherit; font-weight: 700; font-size: 14px; color: var(--accent); background: none; border: 1px solid var(--line); border-radius: 12px; padding: 10px; cursor: pointer; width: 100%; }
 
 .note { font-size: 12.5px; color: var(--muted); }
 
 /* settings sheet */
 .sheet { background: var(--surface); border-radius: 18px; padding: 18px; display: flex; flex-direction: column; gap: 14px; }
 .sheet h3 { margin: 0; font-family: var(--display); font-size: 16px; font-weight: 600; }
+.form { display: flex; flex-direction: column; gap: 14px; }
 .field { display: flex; flex-direction: column; gap: 6px; }
 .field label { font-size: 13px; font-weight: 600; color: var(--muted); }
 .field input {
@@ -189,7 +216,7 @@ h2 { font-family: var(--display); font-size: 17px; font-weight: 600; margin: 8px
   border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; width: 100%; min-width: 0;
 }
 .row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-.actions { display: flex; gap: 10px; flex-wrap: wrap; }
+.actions { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; }
 .btn {
   font: inherit; font-weight: 700; font-size: 15px; border: 0; border-radius: 12px; padding: 12px 18px; cursor: pointer;
   background: var(--accent); color: var(--bg);
@@ -199,11 +226,16 @@ h2 { font-family: var(--display); font-size: 17px; font-weight: 600; margin: 8px
 .btn.danger-solid { background: var(--warn); color: var(--bg); }
 .confirm { display: flex; flex-direction: column; gap: 10px; font-size: 14px; border-top: 1px solid var(--line); padding-top: 14px; }
 .toast {
-  position: fixed; left: 50%; transform: translateX(-50%);
+  position: fixed; left: 50%; transform: translateX(-50%); max-width: calc(100% - 32px); text-align: center;
   bottom: calc(20px + env(safe-area-inset-bottom, 0px));
   background: var(--fg); color: var(--bg); padding: 10px 16px; border-radius: 999px; font-size: 14px; font-weight: 600;
 }
-@media (prefers-reduced-motion: reduce) { .bar > i { transition: none; } .hours i.c { animation: none; opacity: .5; } }
+@media (prefers-reduced-motion: reduce) {
+  .bar > i { transition: none; }
+  .hours i.c { animation: none; opacity: .5; }
+  .breath, .breath.big { transition: none; transform: none; }
+  .breath-word { transform: none; }
+}
 </style>
 </head>
 <body>
@@ -211,7 +243,7 @@ h2 { font-family: var(--display); font-size: 17px; font-weight: 600; margin: 8px
 <div class="app">
   <div class="top">
     <div class="brand">Дни без дыма</div>
-    <button class="icon-btn" id="openSettings" type="button">Настройки</button>
+    <button class="pill-btn" id="openSettings" type="button">Настройки</button>
   </div>
 
   <div class="demo" id="demo" hidden>
@@ -221,7 +253,7 @@ h2 { font-family: var(--display); font-size: 17px; font-weight: 600; margin: 8px
 
   <section class="sheet" id="sheet" hidden>
     <h3>Мои данные</h3>
-    <form id="form" class="sheet" style="padding:0;gap:14px;background:none">
+    <form id="form" class="form">
       <div class="field">
         <label for="quit">Когда выкурили последнюю сигарету</label>
         <input type="datetime-local" id="quit" required>
@@ -240,7 +272,7 @@ h2 { font-family: var(--display); font-size: 17px; font-weight: 600; margin: 8px
         <label for="price">Цена пачки, ₽</label>
         <input type="number" id="price" min="0" step="1" inputmode="decimal" required>
       </div>
-      <div class="actions">
+      <div class="actions" style="justify-content:flex-start">
         <button class="btn" type="submit">Сохранить</button>
         <button class="btn ghost" type="button" id="closeSettings">Отмена</button>
       </div>
@@ -248,8 +280,8 @@ h2 { font-family: var(--display); font-size: 17px; font-weight: 600; margin: 8px
     <div class="confirm">
       <button class="btn danger" type="button" id="relapse">Сорвался, начать заново</button>
       <div id="relapseConfirm" hidden>
-        <p style="margin:0 0 10px">Счётчик начнётся с текущего момента. Это нормально: большинство бросает не с первой попытки.</p>
-        <div class="actions">
+        <p style="margin:0 0 10px">Счётчик начнётся с текущего момента. Это нормально: большинство бросает не с первой попытки, и каждая попытка приближает к успеху.</p>
+        <div class="actions" style="justify-content:flex-start">
           <button class="btn danger-solid" type="button" id="relapseYes">Начать с нуля</button>
           <button class="btn ghost" type="button" id="relapseNo">Не надо</button>
         </div>
@@ -264,122 +296,151 @@ h2 { font-family: var(--display); font-size: 17px; font-weight: 600; margin: 8px
     <div class="since" id="since"></div>
   </section>
 
+  <div class="quote" id="quote"></div>
+
   <section class="stats">
     <div class="stat"><div class="stat-val" id="cigs">0</div><div class="stat-label">сигарет не выкурено</div></div>
     <div class="stat"><div class="stat-val" id="money">0 ₽</div><div class="stat-label">сэкономлено</div></div>
     <div class="stat"><div class="stat-val" id="life">0 ч</div><div class="stat-label">жизни возвращено*</div></div>
   </section>
+  <div class="buy" id="buy"></div>
 
-  <section class="pot">
-    <div class="eyebrow">Потенция</div>
-    <div class="pot-row"><span class="pot-num" id="potPct">0%</span><span class="pot-label">на столько снизился вред курения**</span></div>
-    <div class="bar"><i id="potBar" style="width:0"></i></div>
-    <div class="pot-text" id="potText"></div>
+  <button class="sos-btn" id="sosOpen" type="button">Тянет закурить? Нажми</button>
+  <section class="sos" id="sos" hidden>
+    <div class="eyebrow">Волна тяги длится 3–5 минут</div>
+    <div class="breath-wrap"><div class="breath" id="breath"><span class="breath-word" id="breathWord">Вдох</span></div></div>
+    <div class="sos-time" id="sosTime">3:00</div>
+    <ol class="sos-tips">
+      <li>Дыши за кругом: вдох 4 секунды, задержка 4, выдох 4, задержка 4.</li>
+      <li>Выпей стакан холодной воды маленькими глотками.</li>
+      <li>Займи руки: сожми мяч, поиграй в игру на телефоне, пройдись.</li>
+      <li>Вспомни, зачем бросаешь, и посмотри на свой счётчик выше.</li>
+    </ol>
+    <div class="actions">
+      <button class="btn" id="sosDone" type="button">Отпустило</button>
+      <button class="btn ghost" id="sosClose" type="button">Закрыть</button>
+    </div>
   </section>
 
   <section class="next" id="next">
-    <div class="eyebrow">Следующее достижение</div>
+    <div class="eyebrow">Следующий этап</div>
     <div class="next-title" id="nextTitle"></div>
     <div class="next-text" id="nextText"></div>
     <div class="bar"><i id="nextBar" style="width:0"></i></div>
     <div class="next-meta"><span id="nextPct"></span><span id="nextLeft"></span></div>
   </section>
 
-  <section class="today-box">
-    <div class="today-head">
-      <div class="today-title">Сегодня по часам</div>
-      <div class="today-sum" id="todaySum"></div>
+  <section class="card">
+    <div class="card-head">
+      <div class="card-title">Сегодня по часам</div>
+      <div class="card-sum" id="todaySum"></div>
     </div>
     <div class="today-grid" id="todayGrid"></div>
   </section>
 
-  <section class="cal">
+  <section class="card">
     <div class="cal-head">
       <button class="nav" id="calPrev" type="button" aria-label="Предыдущий месяц">‹</button>
-      <div class="cal-month" id="calMonth"></div>
+      <div class="card-title" id="calMonth"></div>
       <button class="nav" id="calNext" type="button" aria-label="Следующий месяц">›</button>
     </div>
     <div class="cal-grid" id="calGrid"></div>
     <div class="cal-foot">
-      <span class="cal-sum" id="calSum"></span>
+      <span class="card-sum" id="calSum"></span>
       <span class="legend"><span><i class="g"></i>час без сигарет</span><span><i></i>до отказа</span></span>
     </div>
   </section>
 
-  <div class="badges-head"><h2>Награды</h2><span class="badges-count" id="badgesCount"></span></div>
+  <div class="card-head"><h2>Награды</h2><span class="card-sum" id="badgesCount"></span></div>
   <div class="badges" id="badges"></div>
 
-  <h2>Что происходит с организмом</h2>
+  <div class="card-head"><h2>Восстановление организма</h2><span class="card-sum" id="msCount"></span></div>
+  <div class="filters" id="filters">
+    <button class="chip" type="button" data-f="all" aria-pressed="true">Все</button>
+    <button class="chip" type="button" data-f="Эрекция">Эрекция</button>
+    <button class="chip" type="button" data-f="Сердце">Сердце и сосуды</button>
+    <button class="chip" type="button" data-f="Лёгкие">Лёгкие</button>
+    <button class="chip" type="button" data-f="Мозг">Мозг и тяга</button>
+  </div>
   <ol class="timeline" id="timeline"></ol>
+  <button class="more-btn" id="moreBtn" type="button"></button>
 
-  <p class="note">* Оценка: каждая сигарета в среднем сокращает жизнь примерно на 11 минут. Сроки восстановления основаны на данных ВОЗ и CDC и у каждого человека свои.<br>** Приблизительная модель, а не медицинский показатель. Опирается на исследования: улучшение эрекции через 8 недель после отказа (Harte, Meston, 2012), у четверти мужчин с ЭД улучшение за год (Pourmand, 2004), риск ЭД приближается к уровню некурящих примерно за 10 лет. При проблемах с потенцией лучше обратиться к урологу. Данные хранятся только в этом браузере.</p>
+  <p class="note">* Оценка: каждая сигарета в среднем сокращает жизнь примерно на 11 минут.<br>
+  Сроки взяты из данных ВОЗ, CDC и исследований: Sighinolfi и соавт., 2007 (кровоток в половом члене через 24–36 часов); Harte и Meston, 2012 (улучшение эрекции через 8 недель); Pourmand и соавт., 2004 (улучшение при ЭД через год). У каждого человека сроки свои. При проблемах с эрекцией стоит обратиться к урологу. Данные хранятся только на этом устройстве.</p>
 </div>
 
 <div class="toast" id="toast" hidden></div>
 
 <script>
-const MIN = 60e3, HOUR = 60 * MIN, DAY = 24 * HOUR;
+const MIN = 60e3, HOUR = 60 * MIN, DAY = 24 * HOUR, YEAR = 365 * DAY;
+
+// Recovery timeline. Tags drive the filter chips; "Сосуды" and "Кровь" fall under the heart filter.
 const MILESTONES = [
-  { t: 20 * MIN, when: "20 минут", title: "Пульс и давление в норме", text: "Сердцебиение и артериальное давление снижаются до обычного уровня." },
-  { t: 2 * HOUR, when: "2 часа", title: "Руки и ноги теплее", text: "Сосуды расширяются, кровоснабжение пальцев улучшается." },
-  { t: 8 * HOUR, when: "8 часов", title: "Кислорода в крови больше", text: "Уровень угарного газа в крови падает вдвое, кислород возвращается к норме." },
-  { t: 12 * HOUR, when: "12 часов", title: "Угарный газ в норме", text: "Уровень угарного газа в крови такой же, как у некурящего." },
-  { t: DAY, when: "1 день", title: "Риск инфаркта начинает снижаться", text: "Давление стабильнее, сердцу легче работать." },
-  { t: 2 * DAY, when: "2 дня", title: "Вкус и запах возвращаются", text: "Нервные окончания начинают восстанавливаться, еда снова становится вкусной." },
-  { t: 3 * DAY, when: "3 дня", title: "Дышать легче", text: "Никотин выведен, бронхи расслабляются, становится больше энергии." },
-  { t: 7 * DAY, when: "1 неделя", title: "Самое трудное позади", text: "Пик никотиновой ломки пройден, приступы тяги становятся короче и реже." },
-  { t: 14 * DAY, when: "2 недели", title: "Кровообращение лучше", text: "Улучшается кровоток, ходить и подниматься по лестнице становится проще." },
-  { t: 21 * DAY, when: "3 недели", title: "Сон и концентрация", text: "Раздражительность и проблемы со сном обычно сходят на нет, легче сосредоточиться." },
-  { t: 30 * DAY, when: "1 месяц", title: "Меньше кашля", text: "Реснички в лёгких восстанавливаются и лучше очищают дыхательные пути." },
-  { t: 56 * DAY, when: "8 недель", title: "Эрекция крепче", text: "В исследованиях у бросивших курить мужчин к этому сроку заметно улучшались эрекция и возбуждение." },
-  { t: 90 * DAY, when: "3 месяца", title: "Лёгкие работают лучше", text: "Функция лёгких растёт до 10%, одышка при нагрузке заметно меньше." },
-  { t: 180 * DAY, when: "6 месяцев", title: "Спокойнее и радостнее", text: "Уровень тревоги и стресса ниже, чем во время курения, настроение стабильнее." },
-  { t: 270 * DAY, when: "9 месяцев", title: "Кашель и одышка уходят", text: "Лёгкие заметно чище, простуды и бронхиты случаются реже." },
-  { t: 365 * DAY, when: "1 год", title: "Сердце под меньшей угрозой", text: "Риск ишемической болезни сердца вдвое ниже, чем у курящего." },
-  { t: 2 * 365 * DAY, when: "2 года", title: "Риск инсульта снижается", text: "За 2–5 лет риск инсульта может опуститься до уровня некурящего." },
-  { t: 5 * 365 * DAY, when: "5 лет", title: "Риск рака рта и горла вдвое ниже", text: "Также вдвое снижается риск рака пищевода и мочевого пузыря." },
-  { t: 10 * 365 * DAY, when: "10 лет", title: "Риск рака лёгких вдвое ниже", text: "Снижается риск рака гортани и поджелудочной железы." },
-  { t: 15 * 365 * DAY, when: "15 лет", title: "Сердце как у некурящего", text: "Риск ишемической болезни сердца такой же, как у человека, который не курил." },
-  { t: 20 * 365 * DAY, when: "20 лет", title: "Полное восстановление", text: "Риск рака рта, горла и поджелудочной железы приближается к уровню некурящего." }
+  { t: 20 * MIN, when: "20 минут", tag: "Сердце", title: "Пульс и давление снижаются", text: "Сердцебиение и давление начинают возвращаться к обычному уровню." },
+  { t: 2 * HOUR, when: "2 часа", tag: "Сосуды", title: "Руки и ноги теплеют", text: "Сосуды расширяются, кровоснабжение пальцев улучшается." },
+  { t: 3 * HOUR, when: "3 часа", tag: "Кровь", title: "Никотина вдвое меньше", text: "Никотин выводится быстро: его уровень в крови падает вдвое примерно каждые 2 часа." },
+  { t: 6 * HOUR, when: "6 часов", tag: "Кровь", title: "Кислорода становится больше", text: "Угарный газ из дыма вытесняет кислород из крови. Он уходит с дыханием, и уже примерно половины его нет." },
+  { t: 9 * HOUR, when: "9 часов", tag: "Эрекция", title: "Сосуды перестают сжиматься", text: "Никотина осталось меньше 5%. Никотин сужает артерии, в том числе артерии полового члена, и это действие сходит на нет." },
+  { t: 12 * HOUR, when: "12 часов", tag: "Кровь", title: "Угарный газ в норме", text: "Уровень угарного газа в крови как у некурящего, органы получают больше кислорода." },
+  { t: 15 * HOUR, when: "15 часов", tag: "Мозг", title: "Первые волны тяги", text: "Это нормально. Одна волна длится 3–5 минут, потом отпускает. Помогает вода, прогулка или кнопка «Тянет закурить?»." },
+  { t: 18 * HOUR, when: "18 часов", tag: "Лёгкие", title: "Лёгкие начинают очищаться", text: "Без нового дыма реснички в бронхах начинают восстанавливаться и выводить скопившуюся грязь." },
+  { t: 21 * HOUR, when: "21 час", tag: "Сердце", title: "Сердцу спокойнее", text: "Никотин разгоняет пульс на 10–20 ударов в минуту. Теперь сердце бьётся ровнее и тратит меньше сил." },
+  { t: 24 * HOUR, when: "1 день", tag: "Сердце", title: "Риск инфаркта начинает снижаться", text: "Первые сутки позади. Давление стабильнее, сосуды реже спазмируются." },
+  { t: 27 * HOUR, when: "27 часов", tag: "Эрекция", title: "Возвращается оксид азота", text: "Курение подавляет оксид азота — вещество, которое расслабляет сосуды и запускает эрекцию. Без дыма стенки сосудов начинают вырабатывать его лучше." },
+  { t: 30 * HOUR, when: "30 часов", tag: "Мозг", title: "Раздражительность — знак перемен", text: "Мозг учится жить без никотина. Пик раздражительности обычно на 2–3 день, дальше идёт на спад." },
+  { t: 33 * HOUR, when: "33 часа", tag: "Лёгкие", title: "Может появиться кашель", text: "Лёгкие выводят слизь, которая копилась годами. Это временно и значит, что очищение идёт." },
+  { t: 36 * HOUR, when: "36 часов", tag: "Эрекция", title: "Кровоток в половом члене лучше", text: "В исследовании у заядлых курильщиков уже через 24–36 часов без сигарет улучшился кровоток в половом члене, а ночные эрекции стали крепче." },
+  { t: 39 * HOUR, when: "39 часов", tag: "Энергия", title: "Больше кислорода для мышц", text: "Кровь переносит больше кислорода, усталость при нагрузке постепенно уменьшается." },
+  { t: 42 * HOUR, when: "42 часа", tag: "Вкус и запах", title: "Рецепторы просыпаются", text: "Нервные окончания, отвечающие за вкус и запах, начинают восстанавливаться." },
+  { t: 45 * HOUR, when: "45 часов", tag: "Мозг", title: "Тяга приходит реже", text: "Волны тяги всё ещё бывают, но промежутки между ними растут." },
+  { t: 48 * HOUR, when: "2 дня", tag: "Вкус и запах", title: "Никотин выведен, вкус возвращается", text: "Никотина в крови практически не осталось. Еда кажется вкуснее, запахи ярче." },
+  { t: 51 * HOUR, when: "51 час", tag: "Сосуды", title: "Сосуды реже спазмируются", text: "Давление и пульс в течение дня становятся ровнее." },
+  { t: 54 * HOUR, when: "54 часа", tag: "Кровь", title: "Кровь становится менее густой", text: "Курение заставляет тромбоциты слипаться. Без дыма этот эффект ослабевает, и риск тромбов начинает снижаться." },
+  { t: 57 * HOUR, when: "57 часов", tag: "Лёгкие", title: "Бронхи расслабляются", text: "Дыхательные пути меньше сужены, вдох становится глубже." },
+  { t: 60 * HOUR, when: "60 часов", tag: "Мозг", title: "Сон может быть беспокойным", text: "Это временная перестройка. Обычно сон приходит в норму за 1–2 недели." },
+  { t: 63 * HOUR, when: "63 часа", tag: "Эрекция", title: "Сосудам легче наполняться", text: "Без никотина и угарного газа мелкие сосуды, в том числе в половом члене, лучше наполняются кровью." },
+  { t: 66 * HOUR, when: "66 часов", tag: "Мозг", title: "Рецепторы перестраиваются", text: "Лишние никотиновые рецепторы в мозге начинают исчезать. За несколько недель их станет столько же, сколько у некурящего, и тяга сильно ослабнет." },
+  { t: 69 * HOUR, when: "69 часов", tag: "Энергия", title: "Почти трое суток", text: "Самая тяжёлая часть почти пройдена. Через это проходит каждый, кто бросил навсегда." },
+  { t: 72 * HOUR, when: "3 дня", tag: "Лёгкие", title: "Дышать заметно легче", text: "Бронхи расслаблены, объём вдоха растёт, становится больше энергии. Пик ломки позади." },
+  { t: 7 * DAY, when: "1 неделя", tag: "Мозг", title: "Первая неделя", text: "Тяга приходит реже и слабее. Каждая неделя без сигарет повышает шансы не вернуться к курению." },
+  { t: 14 * DAY, when: "2 недели", tag: "Эрекция", title: "Кровообращение лучше", text: "Кровоток улучшается во всём теле, включая половые органы. Ходить и подниматься по лестнице легче." },
+  { t: 21 * DAY, when: "3 недели", tag: "Мозг", title: "Сон и концентрация", text: "Раздражительность и проблемы со сном обычно сходят на нет, легче сосредоточиться." },
+  { t: 30 * DAY, when: "1 месяц", tag: "Лёгкие", title: "Меньше кашля", text: "Реснички в лёгких восстановились и хорошо очищают дыхательные пути." },
+  { t: 56 * DAY, when: "8 недель", tag: "Эрекция", title: "Эрекция крепче", text: "В исследовании у бросивших курить мужчин к этому сроку заметно улучшились эрекция и возбуждение." },
+  { t: 90 * DAY, when: "3 месяца", tag: "Лёгкие", title: "Лёгкие работают лучше", text: "Функция лёгких заметно растёт, одышка при нагрузке уменьшается." },
+  { t: 180 * DAY, when: "6 месяцев", tag: "Мозг", title: "Спокойнее и радостнее", text: "Уровень тревоги и стресса ниже, чем во время курения, настроение стабильнее." },
+  { t: 270 * DAY, when: "9 месяцев", tag: "Лёгкие", title: "Кашель и одышка уходят", text: "Лёгкие заметно чище, простуды и бронхиты случаются реже." },
+  { t: YEAR, when: "1 год", tag: "Сердце", title: "Риск болезней сердца вдвое ниже", text: "Риск ишемической болезни сердца вдвое ниже, чем у курящего." },
+  { t: YEAR, when: "1 год", tag: "Эрекция", title: "Эрекция восстанавливается", text: "В исследовании примерно у четверти мужчин с эректильной дисфункцией эрекция улучшилась за год после отказа. У продолжавших курить улучшений не было." },
+  { t: 2 * YEAR, when: "2 года", tag: "Сердце", title: "Риск инсульта снижается", text: "За 2–5 лет риск инсульта может опуститься до уровня некурящего." },
+  { t: 5 * YEAR, when: "5 лет", tag: "Лёгкие", title: "Риск рака рта и горла вдвое ниже", text: "Также вдвое снижается риск рака пищевода и мочевого пузыря." },
+  { t: 10 * YEAR, when: "10 лет", tag: "Лёгкие", title: "Риск рака лёгких вдвое ниже", text: "Снижается риск рака гортани и поджелудочной железы." },
+  { t: 10 * YEAR, when: "10 лет", tag: "Эрекция", title: "Риск ЭД как у некурящего", text: "Чем дольше вы не курите, тем ниже риск эректильной дисфункции. Со временем он приближается к уровню некурящих." },
+  { t: 15 * YEAR, when: "15 лет", tag: "Сердце", title: "Сердце как у некурящего", text: "Риск ишемической болезни сердца такой же, как у человека, который не курил." },
+  { t: 20 * YEAR, when: "20 лет", tag: "Лёгкие", title: "Полное восстановление", text: "Риск рака рта, горла и поджелудочной железы приближается к уровню некурящего." }
+];
+const FILTER_OF = { "Сосуды": "Сердце", "Кровь": "Сердце" };
+
+const QUOTES = [
+  "Каждая волна тяги длится 3–5 минут. Эту вы тоже переживёте.",
+  "Вы не лишаете себя сигареты. Вы возвращаете себе здоровье.",
+  "Никотин не успокаивает. Он только снимает ломку, которую сам же и вызвал.",
+  "Через год вы будете рады, что начали сегодня.",
+  "Одна сигарета — это не «чуть-чуть». Это перезапуск счётчика.",
+  "Тело уже чинится. Не мешайте ему.",
+  "Самые тяжёлые дни — первые три. Дальше легче с каждым днём.",
+  "Тяга — не приказ. Это сигнал, который пройдёт сам.",
+  "Каждый зелёный час в календаре уже ваш, его никто не отнимет.",
+  "Курение отнимает в среднем около 10 лет жизни. Вы забираете их обратно.",
+  "Свежее дыхание, вкусная еда, крепкое здоровье. Это всё ваше.",
+  "Порадуйте себя сегодня на сэкономленные деньги.",
+  "Сосуды восстанавливаются, а с ними и мужская сила.",
+  "Вы сильнее привычки. Привычка — это просто повторение, и вы его прервали.",
+  "Если тянет, нажмите кнопку ниже и подышите три минуты."
 ];
 
-// Potency: rough recovery model, interpolated on a log time scale between study-based anchors
-const POT = [[0, 0], [DAY, 2], [3 * DAY, 6], [14 * DAY, 15], [56 * DAY, 35], [90 * DAY, 45], [180 * DAY, 58], [365 * DAY, 70], [5 * 365 * DAY, 90], [10 * 365 * DAY, 100]];
-function potency(ms) {
-  const L = t => Math.log1p(t / HOUR);
-  for (let i = 1; i < POT.length; i++) {
-    if (ms < POT[i][0]) { const [t0, p0] = POT[i - 1], [t1, p1] = POT[i]; return p0 + (p1 - p0) * (L(ms) - L(t0)) / (L(t1) - L(t0)); }
-  }
-  return 100;
-}
-function potencyText(ms) {
-  if (ms < 14 * DAY) return "Сосуды начинают расширяться лучше, кровоснабжение восстанавливается. Следующий этап через " + fmtSpan(14 * DAY - ms) + ".";
-  if (ms < 56 * DAY) return "Кровоток в половых органах растёт, эрекция становится стабильнее. До отметки 8 недель: " + fmtSpan(56 * DAY - ms) + ".";
-  if (ms < 365 * DAY) return "Эрекция и чувствительность заметно улучшаются. Дальше восстановление идёт медленнее.";
-  if (ms < 10 * 365 * DAY) return "После года без сигарет проблемы с эрекцией у многих уменьшаются. Риск продолжает снижаться.";
-  return "Риск эректильной дисфункции примерно как у некурящего.";
-}
-
-// Reward badges: cigarettes not smoked, money saved, life regained (minutes)
-const BADGES = [
-  ...[20, 100, 500, 1000, 2500, 5000, 10000, 20000].map(v => ({ kind: "cigs", v, k: "Не выкурено", label: v.toLocaleString("ru-RU") + " " + plural(v, ["сигарета", "сигареты", "сигарет"]) })),
-  ...[1000, 5000, 10000, 25000, 50000, 100000, 250000, 500000].map(v => ({ kind: "money", v, k: "Сэкономлено", label: v.toLocaleString("ru-RU") + " ₽" })),
-  ...[[1440, "1 день"], [10080, "1 неделя"], [43200, "1 месяц"], [129600, "3 месяца"], [525600, "1 год"]].map(([v, label]) => ({ kind: "life", v, k: "Жизни возвращено", label }))
-];
-function renderBadges() {
-  const ms = Math.max(0, Date.now() - new Date(state.quit).getTime());
-  const cigs = ms / DAY * state.perDay;
-  const have = { cigs, money: cigs / state.perPack * state.price, life: cigs * 11 };
-  let got = 0;
-  $("badges").innerHTML = BADGES.map(b => {
-    const val = have[b.kind], done = val >= b.v, pct = Math.min(100, val / b.v * 100);
-    if (done) got++;
-    const s = done ? "✓ Получено" : Math.floor(pct) + "%";
-    return `<div class="badge ${done ? "done" : "locked"}"><div class="badge-k">${b.k}</div><div class="badge-v">${b.label}</div>
-      <div class="badge-s">${s}</div>${done ? "" : `<div class="mbar"><i style="width:${pct.toFixed(1)}%"></i></div>`}</div>`;
-  }).join("");
-  $("badgesCount").textContent = "Получено " + got + " из " + BADGES.length;
-}
+const BUY = [[250, "чашку кофе"], [500, "билет в кино"], [900, "большую пиццу"], [2500, "ужин в кафе"], [8000, "новые кроссовки"],
+  [15000, "хорошие наушники"], [30000, "выходные за городом"], [60000, "новый смартфон"], [120000, "отпуск на море"], [300000, "подержанную машину"]];
 
 const KEY = "smokefree.v1";
 const $ = id => document.getElementById(id);
@@ -421,10 +482,33 @@ function fromLocalInput(v) {
   const m = /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})/.exec(v);
   return m ? new Date(+m[1], m[2] - 1, +m[3], +m[4], +m[5]) : null;
 }
+const elapsed = () => Math.max(0, Date.now() - new Date(state.quit).getTime());
+const cigsAt = ms => ms / DAY * state.perDay;
+const moneyAt = ms => cigsAt(ms) / state.perPack * state.price;
 
+/* ---------- today's hours ---------- */
+function renderToday() {
+  const quit = new Date(state.quit).getTime(), n = new Date(), now = n.getTime();
+  const y = n.getFullYear(), mo = n.getMonth(), d = n.getDate();
+  let html = "", green = 0;
+  for (let h = 0; h < 24; h++) {
+    const start = new Date(y, mo, d, h).getTime(), end = new Date(y, mo, d, h + 1).getTime();
+    let c = "", style = "";
+    if (end <= now && end > quit) { c = "g"; green++; }
+    else if (start <= now && now < end && now >= quit) {
+      c = "c"; style = ` style="--p:${((now - Math.max(start, quit)) / (end - start) * 100).toFixed(1)}%"`;
+    }
+    else if (start > now) c = "f";
+    html += `<div class="th ${c}"${style}>${pad(h)}</div>`;
+  }
+  $("todayGrid").innerHTML = html;
+  $("todaySum").innerHTML = `<b>${green} ${plural(green, ["час", "часа", "часов"])}</b> без сигарет из ${n.getHours()} прошедших`;
+}
+
+/* ---------- month calendar ---------- */
 const MONTHS = ["Январь", "Февраль", "Март", "Апрель", "Май", "Июнь", "Июль", "Август", "Сентябрь", "Октябрь", "Ноябрь", "Декабрь"];
 const nowMonth = () => { const n = new Date(); return n.getFullYear() * 12 + n.getMonth(); };
-let calMonth = nowMonth(), calKey = "";
+let calMonth = nowMonth();
 
 function renderCal() {
   const quit = new Date(state.quit).getTime(), now = Date.now();
@@ -456,36 +540,99 @@ function renderCal() {
     html += `<div class="${cls}" title="${d} ${MONTHS[mo].toLowerCase()}: ${green} из 24 ч без сигарет"><span class="day-n">${d}</span><div class="hours">${cells}</div></div>`;
   }
   $("calGrid").innerHTML = html;
-  const total = Math.max(0, Math.floor((now - quit) / HOUR));
+  const total = Math.floor(elapsed() / HOUR);
   $("calSum").innerHTML = `За месяц <b>${fmtNum(monthHours)} ${plural(monthHours, ["час", "часа", "часов"])}</b> · всего ${fmtNum(total)}`;
 }
-let todayKey = "";
-function renderToday() {
-  const quit = new Date(state.quit).getTime(), n = new Date(), now = n.getTime();
-  const y = n.getFullYear(), mo = n.getMonth(), d = n.getDate();
-  let html = "", green = 0;
-  for (let h = 0; h < 24; h++) {
-    const start = new Date(y, mo, d, h).getTime(), end = new Date(y, mo, d, h + 1).getTime();
-    let c = "", style = "";
-    if (end <= now && end > quit) { c = "g"; green++; }
-    else if (start <= now && now < end && now >= quit) {
-      c = "c"; style = ` style="--p:${((now - Math.max(start, quit)) / (end - start) * 100).toFixed(1)}%"`;
-    }
-    else if (start > now) c = "f";
-    html += `<div class="th ${c}"${style}>${pad(h)}</div>`;
-  }
-  $("todayGrid").innerHTML = html;
-  const passed = n.getHours();
-  $("todaySum").innerHTML = `<b>${green} ${plural(green, ["час", "часа", "часов"])}</b> без сигарет из ${passed} прошедших`;
+$("calPrev").onclick = () => { calMonth--; renderCal(); };
+$("calNext").onclick = () => { calMonth++; renderCal(); };
+
+/* ---------- reward badges ---------- */
+const BADGES = [
+  ...[20, 100, 500, 1000, 2500, 5000, 10000, 20000].map(v => ({ kind: "cigs", v, k: "Не выкурено", label: v.toLocaleString("ru-RU") + " " + plural(v, ["сигарета", "сигареты", "сигарет"]) })),
+  ...[1000, 5000, 10000, 25000, 50000, 100000, 250000, 500000].map(v => ({ kind: "money", v, k: "Сэкономлено", label: v.toLocaleString("ru-RU") + " ₽" })),
+  ...[[1440, "1 день"], [10080, "1 неделя"], [43200, "1 месяц"], [129600, "3 месяца"], [525600, "1 год"]].map(([v, label]) => ({ kind: "life", v, k: "Жизни возвращено", label }))
+];
+function renderBadges() {
+  const ms = elapsed(), cigs = cigsAt(ms);
+  const have = { cigs, money: moneyAt(ms), life: cigs * 11 };
+  let got = 0;
+  $("badges").innerHTML = BADGES.map(b => {
+    const val = have[b.kind], done = val >= b.v, pct = Math.min(100, val / b.v * 100);
+    if (done) got++;
+    return `<div class="badge ${done ? "done" : "locked"}"><div class="badge-k">${b.k}</div><div class="badge-v">${b.label}</div>
+      <div class="badge-s">${done ? "✓ Получено" : Math.floor(pct) + "%"}</div>${done ? "" : `<div class="mbar"><i style="width:${pct.toFixed(1)}%"></i></div>`}</div>`;
+  }).join("");
+  $("badgesCount").textContent = "Получено " + got + " из " + BADGES.length;
 }
 
-$("calPrev").onclick = () => { calMonth--; render(); };
-$("calNext").onclick = () => { calMonth++; render(); };
+/* ---------- recovery timeline ---------- */
+let filter = "all", showAll = false;
+function renderTimeline() {
+  const ms = elapsed(), quit = new Date(state.quit).getTime();
+  const items = MILESTONES.map((m, i) => ({ ...m, i, done: ms >= m.t })).filter(m => filter === "all" || (FILTER_OF[m.tag] || m.tag) === filter);
+  const firstOpen = items.findIndex(m => !m.done);
+  const cur = firstOpen === -1 ? items.length : firstOpen;
+  // Collapsed view: the last two reached stages plus the next five
+  const visible = showAll ? items : items.slice(Math.max(0, cur - 2), cur + 5);
+  const doneCount = items.filter(m => m.done).length;
+  $("msCount").textContent = "Пройдено " + doneCount + " из " + items.length;
 
-let lastDoneCount = -1;
+  $("timeline").innerHTML = visible.map((m, k) => {
+    const pos = items.indexOf(m);
+    const cls = m.done ? "done" : pos === cur ? "current" : "locked";
+    const status = m.done ? "✓ Пройдено " + fmtDate(new Date(quit + m.t)) : "Через " + fmtSpan(m.t - ms);
+    const tagCls = m.tag === "Эрекция" ? "tag e" : "tag";
+    return `<li class="ms ${cls}"><div class="dot">${m.done ? "✓" : pos + 1}</div><div class="ms-body">
+      <div class="ms-top"><span class="ms-when">${m.when}</span><span class="${tagCls}">${m.tag}</span></div>
+      <div class="ms-title">${m.title}</div><div class="ms-text">${m.text}</div><div class="ms-status">${status}</div></div></li>`;
+  }).join("");
+  const hidden = items.length - visible.length;
+  $("moreBtn").hidden = !showAll && hidden === 0;
+  $("moreBtn").textContent = showAll ? "Свернуть" : "Показать все этапы (" + items.length + ")";
+}
+$("moreBtn").onclick = () => { showAll = !showAll; renderTimeline(); };
+$("filters").onclick = e => {
+  const b = e.target.closest(".chip"); if (!b) return;
+  filter = b.dataset.f;
+  document.querySelectorAll(".chip").forEach(c => c.setAttribute("aria-pressed", c === b ? "true" : "false"));
+  renderTimeline();
+};
+
+/* ---------- craving help ---------- */
+let sosTimer = null, sosEnd = 0, sosPhase = 0;
+const PHASES = ["Вдох", "Задержка", "Выдох", "Задержка"];
+function sosTick() {
+  const left = Math.max(0, sosEnd - Date.now());
+  const s = Math.ceil(left / 1000);
+  $("sosTime").textContent = Math.floor(s / 60) + ":" + pad(s % 60);
+  if (left === 0) { stopSos(); $("sosTime").textContent = "Готово"; $("breathWord").textContent = "Молодец"; toast("Три минуты прошли. Тяга слабеет"); }
+}
+function breathStep() {
+  $("breathWord").textContent = PHASES[sosPhase];
+  if (sosPhase === 0) $("breath").classList.add("big");
+  if (sosPhase === 2) $("breath").classList.remove("big");
+  sosPhase = (sosPhase + 1) % 4;
+}
+function startSos() {
+  $("sos").hidden = false; $("sosOpen").hidden = true;
+  sosEnd = Date.now() + 3 * 60000; sosPhase = 0;
+  $("breath").classList.remove("big");
+  breathStep(); sosTick();
+  clearInterval(sosTimer);
+  let n = 0;
+  sosTimer = setInterval(() => { sosTick(); if (++n % 4 === 0 && sosTimer) breathStep(); }, 1000);
+}
+function stopSos() { clearInterval(sosTimer); sosTimer = null; }
+function closeSos() { stopSos(); $("sos").hidden = true; $("sosOpen").hidden = false; }
+$("sosOpen").onclick = startSos;
+$("sosClose").onclick = closeSos;
+$("sosDone").onclick = () => { closeSos(); toast("Отлично! Ещё одна волна позади"); };
+
+/* ---------- main render ---------- */
+let lastDoneCount = -1, minuteKey = "";
 function render() {
   const quit = new Date(state.quit);
-  const ms = Math.max(0, Date.now() - quit.getTime());
+  const ms = elapsed();
   const d = Math.floor(ms / DAY);
 
   $("days").textContent = fmtNum(d);
@@ -493,20 +640,15 @@ function render() {
   $("clock").innerHTML = pad(Math.floor(ms % DAY / HOUR)) + "<span>ч</span>" + pad(Math.floor(ms % HOUR / MIN)) + "<span>мин</span>" + pad(Math.floor(ms % MIN / 1000)) + "<span>сек</span>";
   $("since").textContent = "С " + fmtDate(quit) + (isDemo ? " (пример)" : "");
 
-  const cigs = ms / DAY * state.perDay;
+  const cigs = cigsAt(ms), money = moneyAt(ms);
   $("cigs").textContent = fmtNum(cigs);
-  $("money").textContent = fmtNum(cigs / state.perPack * state.price) + " ₽";
+  $("money").textContent = fmtNum(money) + " ₽";
   const lifeMin = cigs * 11;
-  $("life").textContent = lifeMin < 60 * 48 ? fmtNum(lifeMin / 60) + " ч" : fmtNum(lifeMin / 60 / 24) + " " + plural(lifeMin / 1440, ["день", "дня", "дней"]);
-
-  const p = potency(ms);
-  $("potPct").textContent = Math.floor(p) + "%";
-  $("potBar").style.width = p.toFixed(1) + "%";
-  $("potText").textContent = potencyText(ms);
+  $("life").textContent = lifeMin < 60 * 48 ? fmtNum(lifeMin / 60) + " ч" : fmtNum(lifeMin / 1440) + " " + plural(lifeMin / 1440, ["день", "дня", "дней"]);
 
   const idx = MILESTONES.findIndex(m => ms < m.t);
   if (idx === -1) {
-    $("nextTitle").textContent = "Все достижения открыты";
+    $("nextTitle").textContent = "Все этапы пройдены";
     $("nextText").textContent = "Вы прошли весь путь восстановления. Это огромная победа.";
     $("nextBar").style.width = "100%"; $("nextPct").textContent = "100%"; $("nextLeft").textContent = "";
   } else {
@@ -518,28 +660,21 @@ function render() {
     $("nextPct").textContent = Math.floor(pct) + "%";
     $("nextLeft").textContent = "осталось " + fmtSpan(m.t - ms);
   }
-
-  const n = new Date();
-  const key = state.quit + "|" + calMonth + "|" + n.toDateString() + n.getHours();
-  if (key !== calKey) { calKey = key; renderCal(); }
-  const tKey = state.quit + "|" + n.toDateString() + n.getHours() + ":" + n.getMinutes();
-  if (tKey !== todayKey) { todayKey = tKey; renderToday(); renderBadges(); }
-
   const doneCount = idx === -1 ? MILESTONES.length : idx;
-  if (doneCount !== lastDoneCount || true) {
-    $("timeline").innerHTML = MILESTONES.map((m, i) => {
-      const cls = i < doneCount ? "done" : i === doneCount ? "current" : "locked";
-      let status;
-      if (cls === "done") status = "✓ Достигнуто " + fmtDate(new Date(quit.getTime() + m.t));
-      else if (cls === "current") status = "Через " + fmtSpan(m.t - ms);
-      else status = "Через " + fmtSpan(m.t - ms);
-      return `<li class="ms ${cls}"><div class="dot">${cls === "done" ? "✓" : i + 1}</div><div class="ms-body">
-        <div class="ms-when">${m.when}</div><div class="ms-title">${m.title}</div>
-        <div class="ms-text">${m.text}</div><div class="ms-status">${status}</div></div></li>`;
-    }).join("");
-  }
-  if (lastDoneCount !== -1 && doneCount > lastDoneCount && !isDemo) toast("Новое достижение: " + MILESTONES[doneCount - 1].title);
+  if (lastDoneCount !== -1 && doneCount > lastDoneCount && !isDemo) toast("Новый этап: " + MILESTONES[doneCount - 1].title);
   lastDoneCount = doneCount;
+
+  // Slower parts refresh once a minute
+  const n = new Date();
+  const key = state.quit + "|" + n.toDateString() + n.getHours() + ":" + n.getMinutes();
+  if (key !== minuteKey) {
+    minuteKey = key;
+    renderToday(); renderCal(); renderBadges(); renderTimeline();
+    $("quote").textContent = QUOTES[d % QUOTES.length];
+    const have = BUY.filter(b => money >= b[0]).pop(), next = BUY.find(b => money < b[0]);
+    $("buy").innerHTML = (have ? `Сэкономленного уже хватит на <b>${have[1]}</b>. ` : "") +
+      (next ? `Следующая цель: ${next[1]}, осталось ${fmtNum(next[0] - money)} ₽.` : "Хватит даже на машину. Невероятно!");
+  }
 }
 
 let toastTimer;
@@ -548,6 +683,7 @@ function toast(msg) {
   clearTimeout(toastTimer); toastTimer = setTimeout(() => t.hidden = true, 3000);
 }
 
+/* ---------- settings ---------- */
 function openSheet() {
   const q = isDemo ? new Date() : new Date(state.quit);
   $("quit").value = toLocalInput(q);
@@ -558,6 +694,13 @@ function openSheet() {
   $("quit").focus();
 }
 function closeSheet() { $("sheet").hidden = true; }
+function applyState(s, msg) {
+  state = s; isDemo = false; $("demo").hidden = true;
+  lastDoneCount = -1; minuteKey = ""; calMonth = nowMonth();
+  const ok = save(state);
+  closeSheet(); render();
+  toast(ok ? msg : "Сохранено до закрытия страницы: браузер не даёт хранить данные");
+}
 
 $("openSettings").onclick = () => $("sheet").hidden ? openSheet() : closeSheet();
 $("demoStart").onclick = openSheet;
@@ -567,23 +710,16 @@ $("form").onsubmit = e => {
   const q = fromLocalInput($("quit").value);
   if (!q) { toast("Укажите дату и время"); return; }
   if (q.getTime() > Date.now()) { toast("Дата не может быть в будущем"); return; }
-  state = { quit: q.toISOString(), perDay: +$("perDay").value || 20, perPack: +$("perPack").value || 20, price: +$("price").value || 0 };
-  isDemo = false; $("demo").hidden = true; lastDoneCount = -1; calMonth = nowMonth();
-  toast(save(state) ? "Сохранено" : "Сохранено до закрытия страницы: браузер не даёт хранить данные");
-  closeSheet(); render();
+  applyState({ quit: q.toISOString(), perDay: +$("perDay").value || 20, perPack: +$("perPack").value || 20, price: +$("price").value || 0 }, "Сохранено");
 };
 $("relapse").onclick = () => { $("relapseConfirm").hidden = false; };
 $("relapseNo").onclick = () => { $("relapseConfirm").hidden = true; };
-$("relapseYes").onclick = () => {
-  state = { ...state, quit: new Date().toISOString() };
-  isDemo = false; $("demo").hidden = true; lastDoneCount = -1;
-  save(state); closeSheet(); render(); toast("Новый отсчёт пошёл. Вы справитесь");
-};
+$("relapseYes").onclick = () => applyState({ ...state, quit: new Date().toISOString() }, "Новый отсчёт пошёл. Вы справитесь");
 
 state = load();
 if (!state) {
   isDemo = true;
-  state = { quit: new Date(Date.now() - (3 * DAY + 5 * HOUR + 17 * MIN)).toISOString(), perDay: 20, perPack: 20, price: 250 };
+  state = { quit: new Date(Date.now() - (1 * DAY + 13 * HOUR + 17 * MIN)).toISOString(), perDay: 20, perPack: 20, price: 250 };
   $("demo").hidden = false;
 }
 render();
