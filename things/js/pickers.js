@@ -1,5 +1,6 @@
 // Popovers: generic menu, When / Deadline / Tags / Move / Repeat / Reminder pickers.
-import { db, T, byIndex, isOpenProject, createTag, commit } from "./store.js";
+import * as S from "./store.js";
+import { T, byIndex, isOpenProject, createTag, commit } from "./store.js";
 import { todayStr, toDate, ymd, isDate, fullDate, parseNatural, MONTHS, WD_SHORT, repeatLabel, WEEKDAYS, cap } from "./dates.js";
 import { ic, pie } from "./icons.js";
 
@@ -183,17 +184,17 @@ export function tagPicker(anchor, { selected, onChange }) {
   openPopover(anchor, (pop, close) => {
     pop.innerHTML = `<div class="pop-title">Теги</div><input class="pop-input" placeholder="Найти или создать тег" autocomplete="off" autofocus><div class="opt-list"></div>`;
     const input = pop.querySelector("input"), list = pop.querySelector(".opt-list");
-    const depth = t => { let d = 0, p = t; while (p.parentId && d < 5) { p = db.tags.find(x => x.id === p.parentId) || {}; d++; } return d; };
+    const depth = t => { let d = 0, p = t; while (p.parentId && d < 5) { p = S.db.tags.find(x => x.id === p.parentId) || {}; d++; } return d; };
     const ordered = () => {
       const out = [];
-      const walk = (pid, d) => db.tags.filter(t => (t.parentId || null) === pid).sort(byIndex).forEach(t => { out.push(t); walk(t.id, d + 1); });
+      const walk = (pid, d) => S.db.tags.filter(t => (t.parentId || null) === pid).sort(byIndex).forEach(t => { out.push(t); walk(t.id, d + 1); });
       walk(null, 0);
       return out;
     };
     const draw = () => {
       const q = input.value.trim().toLowerCase();
       const tags = ordered().filter(t => !q || t.title.toLowerCase().includes(q));
-      const exact = db.tags.some(t => t.title.toLowerCase() === q);
+      const exact = S.db.tags.some(t => t.title.toLowerCase() === q);
       list.innerHTML = tags.map(t => `<button class="opt ${sel.has(t.id) ? "on" : ""}" data-id="${t.id}" style="padding-left:${10 + (q ? 0 : depth(t)) * 14}px">${ic(sel.has(t.id) ? "check" : "tag")}<span>${esc(t.title)}</span></button>`).join("")
         + (q && !exact ? `<button class="opt" data-new>${ic("plus")}<span>Создать тег «${esc(input.value.trim())}»</span></button>` : "")
         + (!tags.length && !q ? `<div class="empty-mini">Тегов пока нет — введите название</div>` : "");
@@ -226,13 +227,13 @@ export function movePicker(anchor, { onPick, includeInbox = true, projectsOnly =
       if (projectsOnly) out.push({ label: "Без области", icon: ic("close"), dest: { kind: "none" } });
       const projectEntries = (p, d) => {
         out.push({ label: p.title || "Без названия", icon: pie(0, "c-project"), dest: { kind: "project", id: p.id }, depth: d });
-        if (!projectsOnly) db.headings.filter(h => h.projectId === p.id && !h.archived).sort(byIndex)
+        if (!projectsOnly) S.db.headings.filter(h => h.projectId === p.id && !h.archived).sort(byIndex)
           .forEach(h => out.push({ label: h.title || "Без названия", icon: ic("heading"), dest: { kind: "project", id: p.id, headingId: h.id }, depth: d + 1 }));
       };
-      if (!projectsOnly) db.projects.filter(p => !p.areaId && isOpenProject(p)).sort(byIndex).forEach(p => projectEntries(p, 0));
-      for (const a of [...db.areas].sort(byIndex)) {
+      if (!projectsOnly) S.db.projects.filter(p => !p.areaId && isOpenProject(p)).sort(byIndex).forEach(p => projectEntries(p, 0));
+      for (const a of [...S.db.areas].sort(byIndex)) {
         out.push({ label: a.title || "Без названия", icon: ic("area", "c-area"), dest: { kind: "area", id: a.id }, depth: 0 });
-        if (!projectsOnly) db.projects.filter(p => p.areaId === a.id && isOpenProject(p)).sort(byIndex).forEach(p => projectEntries(p, 1));
+        if (!projectsOnly) S.db.projects.filter(p => p.areaId === a.id && isOpenProject(p)).sort(byIndex).forEach(p => projectEntries(p, 1));
       }
       return out;
     };
